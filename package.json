@@ -7,7 +7,7 @@
     "test": "echo test",
     "start": "node index.js",
     "lint": "eslint .",
-    "deploy": "echo $TRAVIS_BRANCH",
+    "deploy": "echo $TRAVIS_BRANCH, $ZEIT_KEY",
     "build": "echo build"
   },
   "repository": {
