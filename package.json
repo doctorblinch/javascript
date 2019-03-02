@@ -1,0 +1,25 @@
+{
+  "name": "js_labs",
+  "version": "1.0.0",
+  "description": "This is test project.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo test",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "build": "echo build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doctorblinch/javascript.git"
+  },
+  "author": "doctorblinch",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doctorblinch/javascript/issues"
+  },
+  "homepage": "https://github.com/doctorblinch/javascript#readme",
+  "devDependencies": {
+    "eslint": "^5.15.0"
+  }
+}
