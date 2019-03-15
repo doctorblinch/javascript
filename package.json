@@ -23,5 +23,10 @@
   "devDependencies": {
     "eslint": "^5.15.0",
     "now": "^14.0.2"
+  },
+  "dependencies": {
+    "http-proxy": "^1.11.1",
+    "npm": "^6.9.0",
+    "url": "^0.10.3"
   }
 }
