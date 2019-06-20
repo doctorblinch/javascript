@@ -7,7 +7,7 @@
     "test": "echo test",
     "start": "node rozklad_parser.js",
     "proxy": "node https.js",
-    
+    "lint": "eslint",
     "deploy": "echo $TRAVIS_BRANCH, $ZEIT_KEY",
     "build": "echo build"
   },
