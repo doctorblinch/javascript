@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo test",
-    "start": "node index.js",
+    "start": "node rozklad_parser.js",
+    "proxy": "node https.js",
     "lint": "eslint .",
     "deploy": "echo $TRAVIS_BRANCH, $ZEIT_KEY",
     "build": "echo build"
@@ -26,7 +27,10 @@
   },
   "dependencies": {
     "http-proxy": "^1.11.1",
+    "jsdom": "^15.1.1",
     "npm": "^6.9.0",
+    "telegraf": "^3.29.0",
     "url": "^0.10.3"
-  }
+  },
+  "keywords": []
 }

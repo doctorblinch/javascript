@@ -1,158 +1,91 @@
-'use strict';
+'use strict'
 
-const https = require('https');
 const http = require('http');
-const url = require('url');
-//const cheerio = require('cheerio');
 const jsdom = require('jsdom');
-const fs = require('fs');
-const TelegramBot = require('node-telegram-bot-api');
+const { JSDOM } = jsdom;
 
-const rawdata = fs.readFileSync('config.json');
-const token = JSON.parse(rawdata)['TOKEN'];
+let data = '';
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
+const parse = (data, id) => {
+   const dom = new JSDOM(data);
+   const document = dom.window.document;
+   const first = document.getElementById('ctl00_MainContent_FirstScheduleTable').getElementsByTagName('tr');
+   const second = document.getElementById('ctl00_MainContent_SecondScheduleTable').getElementsByTagName('tr');
+   const week = {
+       1: 'monday',
+       2: 'tuesday',
+       3: 'wednesday',
+       4: 'thursday',
+       5: 'friday'
+   };
 
-const URL = 'http://rozklad.kpi.ua/Schedules/ViewSchedule.aspx?g=894be0b0-9c4b-492e-a3d0-a6950cb1a3e1';
-//const URL = 'https://www.nasa.gov';
-const parsedURL = URL.includes('//') ?
-  url.parse(URL) : url.parse('//' + URL, false, true);
+   let firstWeek = {};
+   let secondWeek = {};
+   for(let i in first){
+       if(i>0 && i<6) {
 
-const schedules = {};
+           const firstRow = first[i].getElementsByTagName('td');
+           const secondRow = second[i].getElementsByTagName('td');
 
-if (parsedURL.protocol === 'http:') {
-  getPage(http);
-} else if (parsedURL.protocol === 'https:') {
-  getPage(https);
-}
+           for (let j = 1; j<6; j++){
+               if (firstWeek[week[j]] === undefined){
+                   firstWeek[week[j]] = [];
+                   secondWeek[week[j]] = [];
+               }
+               try {
+                   let temp = {};
+                   const firstLength = firstRow[j].getElementsByTagName('a').length;
+                   const secondLength = secondRow[j].getElementsByTagName('a').length;
+                   temp.number = i;
+                   temp.name = firstRow[j].getElementsByTagName('a')[0].innerHTML;
+                   temp.teacher = firstRow[j].getElementsByTagName('a')[1].innerHTML;
+                   temp.classroom = firstRow[j].getElementsByTagName('a')[firstLength-1].innerHTML;
+                   firstWeek[week[j]].push(temp);
+                   temp.number = i;
+                   temp.name = secondRow[j].getElementsByTagName('a')[0].innerHTML;
+                   temp.teacher = secondRow[j].getElementsByTagName('a')[1].innerHTML;
+                   temp.classroom = secondRow[j].getElementsByTagName('a')[secondLength-1].innerHTML;
+                   secondWeek[week[j]].push(temp);
+               }
+               catch(err){
+                   //firstWeek[week[j]].push(' ');
+                   //secondWeek[week[j]].push(' ');
+               }
+           }
+       }
+   }
+   if (id === 1){
+       return formatData(firstWeek);
+   } else if(id === 2) {
+       return formatData(secondWeek);
+   }
+};
 
-function getPage(obj) {
-  obj.get(URL, res => {
-    let data = '';
-
-    res.on('data', chunck => {
-      data += chunck;
-    });
-
-    res.on('end', () => {
-      console.log('\tWe have received data!');
-      parse(data);
-      console.log('\tWe have parsed data!');
-    });
-  }).on('error', err => {
-    //console.log(Object.getOwnPropertyNames(err));
-    const errObj = {
-      'StatusCode': err.code,
-      'hostname': err.hostname,
-      'host': err.host,
-      'port': err.port,
-      'message': err.message,
-    };
-    console.error('We have an error: \n', errObj);
-  });
-}
-
-function parse(data) {
-  const { JSDOM } = jsdom;
-  const dom = new JSDOM(data);
-
-  const firstWeek = dom.window.document
-    .getElementById('ctl00_MainContent_FirstScheduleTable');
-  const secondWeek = dom.window.document
-    .getElementById('ctl00_MainContent_SecondScheduleTable');
-
-  const allTrFirstWeek = firstWeek.querySelectorAll('tr');
-  const allTrSecondWeek = secondWeek.querySelectorAll('tr');
-
-  // tr[0] - day of week
-  // tr[1] td[0] - time
-  // const schedules = {};
-  const week1 = parseWeek(allTrFirstWeek);
-  const week2 = parseWeek(allTrSecondWeek);
-
-  schedules['Перший тиждень'] = week1;
-  schedules['Другий тиждень'] = week2;
-
-  return schedules;
-}
-
-function parseWeek(allTr) {
-  const week = {};
-  const days = {};
-  let time = undefined;
-
-  for (let i = 0; i < allTr.length; i++) {
-    const allTd = allTr[i].querySelectorAll('td');
-    for (let j = 0; j < allTd.length; j++) {
-      const td = allTd[j];
-      if (i === 0) {
-        if (td.textContent.trim() === '') {
-          continue;
+const formatData = (data) =>{
+    let result = '';
+    const days = Object.keys(data);
+    for (const day of days){
+        result += '---------------' + '\n' + day +'\n' + '---------------' + '\n';
+        for(const lesson in data[day]){
+            result += data[day][lesson].number + '.' + data[day][lesson].name + '\n';
+            result += 'Teacher: ' + data[day][lesson].teacher + '\n';
+            result += 'Classroom: ' + data[day][lesson].classroom + '\n\n' ;
         }
-        week[td.textContent.trim()] = {};
-        days[j] = td.textContent.trim();
-      } else {
-        if (j === 0) {
-          for (const day in week) {
-            week[day][td.textContent.trim().slice(1)] = '';
-          }
-          time = td.textContent.trim().slice(1);
-        } else {
-          if (td.textContent.trim() === '') {
-            delete week[days[j]][time];
-          } else {
-            week[days[j]][time] = td.textContent.trim();
-          }
-          // console.log('');
-        }
-        // console.log('');
-      }
-      //console.log(td.textContent.trim());
     }
-  }
-
-  return week;
-}
+    return result;
+};
 
 
-bot.onText(/\/get (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
-
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
-
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
+http.get('http://rozklad.kpi.ua/Schedules/ViewSchedule.aspx?g=894be0b0-9c4b-492e-a3d0-a6950cb1a3e1', (res) =>{
+    res.on('data', (chunk)=>{
+        data+=chunk;
+    });
+    res.on('end', ()=>{
+        //console.log(data);
+        return data;
+    });
+}).on('error', (err)=>{
+    console.log('Error', err);
 });
-
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  let someText = '';
-
-
-  if (msg['text'] === 'full') {
-    for (const week in schedules) {
-      someText += week + ':\n\n';
-      someText += '-------------------------------\n\n';
-      for (const day in schedules[week]) {
-        someText += '\t\t\t' + day + ':\n\n';
-        for (const time in schedules[week][day]) {
-          someText += '\t\t\t\t\t\t' + time + ': ' +
-           schedules[week][day][time] + '\n\n';
-        }
-        someText += '\n\n';
-      }
-      someText += '-------------------------------\n\n';
-    }
-  } else {
-    someText = 'I can\'t find this command';
-  }
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, someText.slice(0, -33));
-});
+console.log(page);
+//parse(data,2)
