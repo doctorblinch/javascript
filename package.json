@@ -9,7 +9,7 @@
     "proxy": "node https.js",
     "lint": "eslint",
     "deploy": "echo $TRAVIS_BRANCH, $ZEIT_KEY",
-    "build": "echo build"
+    "build": "node index.js"
   },
   "repository": {
     "type": "git",

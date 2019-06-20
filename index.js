@@ -134,4 +134,7 @@ bot.hears('1', (ctx) => {
 bot.hears('2', (ctx) => {
   ctx.reply(formatOutput(schedules,[2]))
 });
-bot.launch();
+//bot.launch();
+bot.telegram.setWebhook('https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');
+
+module.exports = bot.webhookCallback('/');
