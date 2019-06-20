@@ -1,6 +1,6 @@
 'use strict';
 
-const { parser } = require('./parser.js');
+const { parse } = require('./parser.js');
 const Telegraf = require('telegraf');
 const SECRET_KEY = '868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
 const bot = new Telegraf(SECRET_KEY);
@@ -10,6 +10,6 @@ bot.hears(/^[А-ЯІа-яі]{2}-[1-9а-яі]{2,5}$/, (ctx) => parse(ctx.message.
     .then(result=>{ctx.reply(result)})
     .catch(()=>ctx.reply('Something went wrong.\nAre you sure that you choosen the right group and rozklad service is available?')));
 
+//bot.launch()
 bot.telegram.setWebhook('https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');
-
 module.exports = bot.webhookCallback('/');
