@@ -148,4 +148,4 @@ const parse = function parse(group){
         })
 };
 
-module.exports = { parser };
+module.exports = { parse };
