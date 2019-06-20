@@ -160,7 +160,4 @@ bot.help((ctx) => ctx.reply('Print in your group name to get your schedule'));
 bot.hears(/^[А-ЯІа-яі]{2}-[1-9а-яі]{2,5}$/, (ctx) => parse(ctx.message.text)
     .then(result=>{ctx.reply(result)})
     .catch(()=>ctx.reply('Ooopsie. Someone made an ooopsie')));
-
-bot.telegram.setWebhook('https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');
-
-module.exports = bot.webhookCallback('/');
+bot.launch()
