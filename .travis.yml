@@ -8,4 +8,4 @@ script:
   - npm run test
   - npm run build
   - now alias --token=$ZEIT_KEY -V 2 javascipt-$TRAVIS_BRANCH.now.sh
-  - now -e BOT_TOKEN="868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk"
+  - now -e BOT_TOKEN=@BOT_TOKEN
