@@ -1,13 +1,4 @@
 'use strict'
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
-
 
 const http = require('http');
 const jsdom = require('jsdom');
@@ -15,29 +6,32 @@ const { JSDOM } = jsdom;
 
 let data;
 const schedules = {};
+const url = 'http://rozklad.kpi.ua/Schedules/ScheduleGroupSelection.aspx';
 
-function parse(data) {
+
+function parse(url) {
   const { JSDOM } = jsdom;
-  const dom = new JSDOM(data);
+  //const dom = new JSDOM(data);
+    return JSDOM.fromURL(url).then(dom => {
+    const firstWeek = dom.window.document
+      .getElementById('ctl00_MainContent_FirstScheduleTable');
+    const secondWeek = dom.window.document
+      .getElementById('ctl00_MainContent_SecondScheduleTable');
 
-  const firstWeek = dom.window.document
-    .getElementById('ctl00_MainContent_FirstScheduleTable');
-  const secondWeek = dom.window.document
-    .getElementById('ctl00_MainContent_SecondScheduleTable');
+    const allTrFirstWeek = firstWeek.querySelectorAll('tr');
+    const allTrSecondWeek = secondWeek.querySelectorAll('tr');
 
-  const allTrFirstWeek = firstWeek.querySelectorAll('tr');
-  const allTrSecondWeek = secondWeek.querySelectorAll('tr');
+    // tr[0] - day of week
+    // tr[1] td[0] - time
+    // const schedules = {};
+    const week1 = parseWeek(allTrFirstWeek);
+    const week2 = parseWeek(allTrSecondWeek);
 
-  // tr[0] - day of week
-  // tr[1] td[0] - time
-  // const schedules = {};
-  const week1 = parseWeek(allTrFirstWeek);
-  const week2 = parseWeek(allTrSecondWeek);
-
-  schedules['week 1'] = week1;
-  schedules['week 2'] = week2;
-//  console.log(schedules);
-  return schedules;
+    schedules['week 1'] = week1;
+    schedules['week 2'] = week2;
+  //  console.log(schedules);
+    return schedules;
+  })
 }
 
 
@@ -68,17 +62,40 @@ function parseWeek(allTr) {
           } else {
             week[days[j]][time] = td.textContent.trim();
           }
-          // console.log('');
         }
-        // console.log('');
       }
-      //console.log(td.textContent.trim());
     }
   }
 
   return week;
 }
 
+const getGroupUrl = function getGroupUrl(url, group) {
+    return JSDOM.fromURL(url).then(dom => {
+        const document = dom.window.document;
+        const formElement = document.getElementById('aspnetForm');
+        const hiddenInputs = formElement.querySelectorAll('input[type="hidden"]');
+
+        const form = {
+            ctl00$MainContent$ctl00$txtboxGroup: group,
+            ctl00$MainContent$ctl00$btnShowSchedule: "Розклад занять"
+        };
+
+        [...hiddenInputs].forEach(elem =>{ elem.value ? form[elem.name] = elem.value : console.log("Error")});
+
+        return new Promise(resolve=>{
+            request.post({
+                url: url,
+                form: form
+            }, (err, res)=>{
+                resolve(`http://rozklad.kpi.ua${res.headers.location}`)
+            });
+        });
+    });
+};
+
+
+/*
 http.get('http://rozklad.kpi.ua/Schedules/ViewSchedule.aspx?g=894be0b0-9c4b-492e-a3d0-a6950cb1a3e1', (res) =>{
     res.on('data', (chunk)=>{
         data+=chunk;
@@ -91,7 +108,7 @@ http.get('http://rozklad.kpi.ua/Schedules/ViewSchedule.aspx?g=894be0b0-9c4b-492e
 }).on('error', (err)=>{
     console.log('Error', err);
 });
-
+*/
 function formatOutput(schedual, weeks=[1,2]){
     let formatedSchedual = "Розклад:\n";
     if (weeks.includes(1)){
@@ -119,6 +136,14 @@ function formatOutput(schedual, weeks=[1,2]){
     return formatedSchedual;
 }
 
+const groupParsing = function groupParsing(group){
+  return getGroupUrl(url, group).then(groupUrl=>{
+           return formatOutput(groupUrl)
+       },
+       error=>{
+           throw (error)
+       })
+};
 
 const Telegraf = require('telegraf');
 const SECRET_KEY = '868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
@@ -134,7 +159,7 @@ bot.hears('1', (ctx) => {
 bot.hears('2', (ctx) => {
   ctx.reply(formatOutput(schedules,[2]))
 });
-//bot.launch();
+bot.hears('q', (ctx) =>groupParsing('ІС-72'));
 bot.telegram.setWebhook('https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');
 
 module.exports = bot.webhookCallback('/');
