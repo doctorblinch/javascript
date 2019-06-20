@@ -153,13 +153,13 @@ const parse = function parse(group){
 
 
 const Telegraf = require('telegraf');
-const SECRET_KEY = '868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
+const SECRET_KEY = $BOT_TOCKEN;//'868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
 const bot = new Telegraf(SECRET_KEY);
-bot.start((ctx) => ctx.reply('Hello!'));
-bot.help((ctx) => ctx.reply('Print in your group name to get your schedule'));
+bot.start((ctx) => ctx.reply('Hello, this is KPI rozklad bot!\nPrint group name whose schedual you want to see.'));
+bot.help((ctx) => ctx.reply('Print group name whose schedual you want to see.'));
 bot.hears(/^[А-ЯІа-яі]{2}-[1-9а-яі]{2,5}$/, (ctx) => parse(ctx.message.text)
     .then(result=>{ctx.reply(result)})
-    .catch(()=>ctx.reply('Ooopsie. Someone made an ooopsie')));
+    .catch(()=>ctx.reply('Something went wrong.\nAre you sure that you choosen the right group and rozklad service is available?')));
 
 bot.telegram.setWebhook('https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');
 
