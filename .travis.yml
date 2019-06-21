@@ -7,6 +7,6 @@ script:
   - npm run lint
   - npm run test
   - npm run build
-  - npm run deploy
   - npm run getToken
   - npm run getPath
+  - npm run deploy
