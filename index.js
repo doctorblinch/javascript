@@ -9,7 +9,7 @@ bot.help((ctx) => ctx.reply('Print group name whose schedual you want to see.'))
 bot.hears(/^[А-ЯІа-яі]{2}-[1-9а-яі]{2,5}$/, (ctx) => parse(ctx.message.text)
     .then(result=>{ctx.reply(result)})
     .catch(()=>ctx.reply('Something went wrong.\nAre you sure that you choosen the right group and rozklad service is available?')));
-
+bot.hears('hi' (ctx) => ctx.reaply('hi'));
 //bot.launch()
 const webhook_path = process.env.WEB_HOOK_PATH;
 //bot.telegram.setWebhook(webhook_path);//'https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');//
