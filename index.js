@@ -12,5 +12,5 @@ bot.hears(/^[А-ЯІа-яі]{2}-[1-9а-яі]{2,5}$/, (ctx) => parse(ctx.message.
 
 //bot.launch()
 const webhook_path = process.env.WEB_HOOK_PATH;
-bot.telegram.setWebhook(webhook_path);//'https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');//
+//bot.telegram.setWebhook(webhook_path);//'https://nodelabs-kpi-schedule-bot.doctorblinch.now.sh');//
 module.exports = bot.webhookCallback('/');
