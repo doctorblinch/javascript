@@ -9,5 +9,6 @@ script:
   - npm run build
   - npm run getToken
   - npm run getPath
+  - npm run deleteWebhook
   - npm run setWebhook
   - npm run deploy
