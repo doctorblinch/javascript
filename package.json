@@ -9,8 +9,8 @@
     "proxy": "node https.js",
     "lint": "eslint",
     "deploy": "now alias --token=$ZEIT_KEY -V 2 javascipt-$TRAVIS_BRANCH.now.sh",
-    "setWebhook" : "xdg-open https://api.telegram.org/bot868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk/setWebhook?url=https://javascipt-master.now.sh/",
     "getToken": "now --token=$ZEIT_KEY -e BOT_TOKEN=$BOT_TOKEN",
+    "setWebhook" : "xdg-open https://api.telegram.org/bot$BOT_TOKEN/setWebhook?url=https://javascipt-master.now.sh/",
     "getPath": "now --token=$ZEIT_KEY -e WEB_HOOK_PATH=$WEB_HOOK_PATH",
     "build": "node index.js"
   },
