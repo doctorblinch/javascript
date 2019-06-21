@@ -9,4 +9,4 @@ script:
   - npm run build
   - npm run deploy
   - npm run getToken
-  - now --token=$ZEIT_KEY -e BOT_TOKEN=$BOT_TOKEN
+  - npm run getPath
