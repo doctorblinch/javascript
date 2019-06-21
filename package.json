@@ -8,7 +8,7 @@
     "start": "node rozklad_parser.js",
     "proxy": "node https.js",
     "lint": "eslint",
-    "deploy": "echo $TRAVIS_BRANCH, $ZEIT_KEY",
+    "deploy": "now alias --token=$ZEIT_KEY -V 2 javascipt-$TRAVIS_BRANCH.now.sh",
     "build": "node index.js"
   },
   "repository": {
