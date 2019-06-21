@@ -4,20 +4,6 @@ const request = require('request');
 const url = 'http://rozklad.kpi.ua/Schedules/ScheduleGroupSelection.aspx';
 var schedules =  {};
 
-function getWeekData (id, document) {
-    if(document.getElementById(id) === null || document.getElementById(id).getElementsByTagName('tr') === null){
-        throw "Error";
-    }
-    return document.getElementById(id).getElementsByTagName('tr');
-}
-
-function getRowData (document) {
-       if (document.getElementsByTagName('td') === null) {
-           throw "Error";
-       }
-       return document.getElementsByTagName('td');
-}
-
 
 function formatOutput(schedual, weeks=[1,2]){
     let formatedSchedual = "Розклад:\n";
