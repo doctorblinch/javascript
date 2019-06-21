@@ -2,7 +2,7 @@
 
 const { parse } = require('./parser.js');
 const Telegraf = require('telegraf');
-const SECRET_KEY = '868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
+const SECRET_KEY = process.env.BOT_TOKEN//'868853661:AAH36Ot5-90yT_QJTs2FOoLKLcQSyWThATk';
 const bot = new Telegraf(SECRET_KEY);
 bot.start((ctx) => ctx.reply('Hello, this is KPI rozklad bot!\nPrint group name whose schedual you want to see.'));
 bot.help((ctx) => ctx.reply('Print group name whose schedual you want to see.'));
