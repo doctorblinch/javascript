@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "canvas": "^2.5.0",
-    "http-proxy": "^1.11.1",
+    "http-proxy": "^1.18.1",
     "jsdom": "^15.1.1",
     "npm": "^6.9.0",
     "telegraf": "^3.29.0",
